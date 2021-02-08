@@ -1,4 +1,5 @@
 use serial::{self, SerialPort};
+use std::{thread, time, mem};
 
 use config::Config;
 use transmitter::Transmitter;
@@ -32,6 +33,7 @@ impl RFM69Transmitter {
 impl Transmitter for RFM69Transmitter {
     fn send(&mut self, gen: &mut Iterator<Item = u32>) {
         for word in gen {
+
             let bytes = [
                 ((word & 0xff000000) >> 24) as u8,
                 ((word & 0x00ff0000) >> 16) as u8,
@@ -39,9 +41,12 @@ impl Transmitter for RFM69Transmitter {
                 (word & 0x000000ff) as u8,
             ];
 
-            if (*self.serial).write_all(&bytes).is_err() {
-                error!("Unable to write data to the serial port");
-                return;
+            // Retry a couple of times to send data
+            for _ in 0..5 {
+               if (!(*self.serial).write_all(&bytes).is_err()) {
+                  break;
+               }
+               thread::sleep(time::Duration::from_millis(50));
             }
         }
 
@@ -55,5 +60,20 @@ impl Transmitter for RFM69Transmitter {
         if (*self.serial).flush().is_err() {
             error!("Unable to flush serial port");
         }
+
+        // Wait a little bit
+        thread::sleep(time::Duration::from_millis(500));
+        
+        // Lets check for reply from radio, if packet is send
+        loop {
+            let mut buf = [0 as u8];
+            (*self.serial).read(&mut buf);
+            //info!("Received: {:?}", buf);
+            if buf == eot {
+               break;
+            }
+        }
+
+
     }
 }
