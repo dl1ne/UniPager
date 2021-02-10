@@ -67,14 +67,21 @@ impl Default for RaspagerConfig {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(default)]
 pub struct RFM69Config {
-    pub port: String
+    pub port: String,
+    pub freq: u32,
+    pub output_level: u8
 }
 
 impl Default for RFM69Config {
     fn default() -> RFM69Config {
-        RFM69Config { port: String::from("/dev/ttyUSB0") }
+        RFM69Config { 
+		    port: String::from("/dev/ttyUSB0"),
+		    freq: 439987500,
+		    output_level: 31
+	    }
     }
 }
+
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(default)]
