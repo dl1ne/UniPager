@@ -152,6 +152,19 @@
                   <input type="text" id="rfm69-port"
                     v-model="config.rfm69.port">
                 </div>
+              <div class="form-row">
+               <div class="form-group">
+                  <label for="raspager-freq">Frequency (Hz)</label>
+                  <input type="number" id="rfm69-freq"
+                    v-model.number="config.rfm69.freq" class="u32-number">
+                </div>
+                <div class="form-group">
+                  <label for="rfm69-output-Level">Output Level</label>
+                  <input type="number" id="rfm69-output-level"
+                    v-model.number="config.rfm69.output_level"
+                    step="1" min="0" max="31" class="u8-number">
+                </div>
+               </div>
               </div>
             </div>
           </div>
